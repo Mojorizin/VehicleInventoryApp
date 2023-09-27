@@ -8,7 +8,7 @@ public class Car {
         year = carYear;
         mileage = carMileage;
     }
-    public void printCar() {
-        System.out.println("Vehicle: " + year + " " + color + " " + make + " " + model + " with " + mileage + " miles." );
+    public String toString() {
+        return year + " | " + color + " | " + make + " | " + model + " | " + mileage + " miles";
     }
 }

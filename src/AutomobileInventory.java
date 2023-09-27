@@ -4,13 +4,12 @@
  * Module 8 Portfolio Project
  */
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
-
 public class AutomobileInventory {
-
-    List<Car> inventoryList = new ArrayList<Car>();
     public static void displayMenu() {
         System.out.println("********************");
         System.out.println(" 1. View Inventory.");
@@ -22,7 +21,7 @@ public class AutomobileInventory {
         System.out.println("********************");
         System.out.print("Please make a selection: ");
     }
-    public static void makeCar() {
+    public static Car makeCar() {
         Scanner sc = new Scanner(System.in);
 
         System.out.println("Enter the make of the vehicle: ");
@@ -42,12 +41,55 @@ public class AutomobileInventory {
 
         Car newCar = new Car();
         newCar.setCar(userMake, userModel, userColor, userYear, userMileage);
-        newCar.printCar();
-    }
 
+        return newCar;
+    }
+    public static void displayInventory(ArrayList<Car> inventoryList) {
+        if (inventoryList.isEmpty()) {
+            System.out.println("There are no cars in the inventory.");
+        } else {
+            System.out.println("There are " + inventoryList.size() + " cars in the inventory.");
+            for (int i = 0; i < inventoryList.size(); i ++){
+                Car car = inventoryList.get(i);
+                System.out.println("Item # " + (i + 1) + " : " + car);
+            }
+        }
+    }
+    public static void deleteCar(ArrayList<Car> inventoryList) {
+            Scanner sc = new Scanner(System.in);
+            displayInventory(inventoryList);
+            System.out.print("Which item do you want to remove? ");
+            int removeSelect = sc.nextInt();
+            inventoryList.remove(removeSelect - 1);
+            System.out.println("Item # " + removeSelect + " was removed from the inventory");
+    }
+    public static void updateCar (ArrayList<Car> inventoryList) {
+        Scanner sc = new Scanner(System.in);
+        displayInventory(inventoryList);
+        System.out.print("Which item do you want to update? ");
+        int updateSelect = sc.nextInt();
+        inventoryList.remove(updateSelect - 1);
+
+        Car newCar = makeCar();
+        inventoryList.add(newCar);
+
+        System.out.println("Item # " + updateSelect + " has been updated.");
+    }
+    public static void printInventoryToFile(ArrayList<Car> inventoryList, String fileName) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            for (Car car : inventoryList) {
+                writer.write(car.toString());
+                writer.newLine();
+            }
+            System.out.println("Inventory has been successfully written to " + fileName);
+        } catch (IOException e) {
+            System.err.println("Error writing to the file: " + e.getMessage());
+        }
+    }
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        int menuSelect = 0;
+        ArrayList<Car> inventoryList = new ArrayList<>();
+        int menuSelect;
 
         do {
             displayMenu();
@@ -55,23 +97,26 @@ public class AutomobileInventory {
 
             switch (menuSelect) {
                 case 1:
-                    System.out.println("Option 1 needs code.");
+                    displayInventory(inventoryList);
                     break;
                 case 2:
-                    makeCar();
+                    Car newCar = makeCar();
+                    inventoryList.add(newCar);
+                    System.out.println("New car has been added to the inventory.");
                     break;
                 case 3:
-                    System.out.println("You selected option 3");
+                    updateCar(inventoryList);
                     break;
                 case 4:
-                    System.out.println("You selected option 4");
+                    deleteCar(inventoryList);
                     break;
                 case 5:
-                    System.out.println("You selected option 5");
+                    printInventoryToFile(inventoryList, "vehicle_inventory.txt");
                     break;
                 case 6:
                     break;
-
+                default:
+                    System.out.println("That is not a valid menu selection.");
             }
         }
         while (menuSelect != 6);
